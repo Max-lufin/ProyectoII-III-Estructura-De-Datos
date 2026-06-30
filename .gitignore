@@ -1,0 +1,13 @@
+#archivos ejecutables de c
+main
+buscador
+*.exe
+*.o
+*.a
+
+#carpetas de configuración locales (VS Code)
+.vscode/
+
+#archivos temporales del sistema
+*.swp
+.DS_Store
