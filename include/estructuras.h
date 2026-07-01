@@ -1,6 +1,17 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 
+//nodo para la cola de espera del BFS
+typedef struct NodoCola{
+    long long int id_usuario;
+    int grado;
+    struct NodoCola* siguiente;
+} NodoCola;
+//estructura de la cola
+typedef struct Cola{
+    NodoCola* primero;
+    NodoCola* ultimo;
+} Cola;
 
 typedef struct NodoAmigo {
     long long int id_amigo;
@@ -32,6 +43,7 @@ typedef struct NodoUsuario{
     Post *lista_post;
     Amigo * lista_amigos;
     struct NodoUsuario* siguiente;
+    int id_ultima_busqueda; //id para el BFS
     
 } Usuario;
 //este es el indice invertido
