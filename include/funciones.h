@@ -28,8 +28,12 @@ void liberarMemoriaUsuario();
 void liberarMemoriaLike(Like *lista_like);
 void liberarMemoriaPost();
 void liberarMemoriaVocabulario();
-void liberarMemoriaCola(Cola *c);
+void liberarMemoriatablaHash(tablaHash *tabla);
 //stopword
 int StopWord(char* palabra);
-
+//tabla hash
+void insertarHash(tablaHash* tabla, char* hastag, int id_post);
+void mostrarTopN(tablaHash* tabla, int top_n);
+unsigned long hash_djb2(char* palabra, int M);
+tablaHash* iniciarTablaHash(int N);
 #endif

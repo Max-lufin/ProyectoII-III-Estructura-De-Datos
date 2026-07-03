@@ -1,12 +1,14 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 
+
 //nodo para la cola de espera del BFS
 typedef struct NodoCola{
     long long int id_usuario;
     int grado;
     struct NodoCola* siguiente;
 } NodoCola;
+
 //estructura de la cola
 typedef struct Cola{
     NodoCola* primero;
@@ -17,8 +19,9 @@ typedef struct NodoAmigo {
     long long int id_amigo;
     struct NodoAmigo *siguiente;
 } Amigo;
+
 typedef struct NodoLike{
-    int id_usuario_like;
+    long long int id_usuario_like;
 
     struct NodoLike* siguiente;
 } Like;
@@ -30,15 +33,15 @@ typedef struct NodoPosteo{
 
 typedef struct Post{
     int id_post_global;
-    int id_usuario_post;
+    long long int id_usuario_post;
     char tags[1000];
     Like *lista_Like;
     struct Post *siguiente;
   
-} Post; 
+} Post;
 
 typedef struct NodoUsuario{
-    int id_usuario;
+    long long int id_usuario;
     char nombre_usuario[1000];
     Post *lista_post;
     Amigo * lista_amigos;
@@ -46,13 +49,20 @@ typedef struct NodoUsuario{
     int id_ultima_busqueda; //id para el BFS
     
 } Usuario;
+
 //este es el indice invertido
 //P.D. con "hashtag", nos referimos a una palabra
 typedef struct NodoVocabulario{
     char hashtag[1000];
-
+    int frecuencia; //contador para saber el N
     NodoPosteo* lista_posteo;
     struct NodoVocabulario* siguiente;
 } Vocabulario;
+
+//estructura tabla hash
+typedef struct tablaHash{ //tabla es un arreglo de punteros 
+    int tamano;  //tamaño de la tabla hash
+    Vocabulario** tabla; //doble puntero a Vocabulario, para poder crear el arreglo de punteros 
+}tablaHash;
 
 #endif
