@@ -9,14 +9,16 @@
 Usuario* lista_usuarios = NULL;
 Post* lista_posts = NULL;
 Vocabulario* lista_vocabulario = NULL;
-
+tablaHash* mi_tabla_hash = NULL;
 int main(){
   printf("--------------------------------\n");
   printf("------Iniciando Buscador--------\n");
   printf("--------------------------------\n");
 
+  mi_tabla_hash = iniciarTablaHash(119); //iniciamos la tabla hash con un N=119, lo que nos da un M=178
+
   cargarUsuarios();
-  cargarPosts();
+  cargarPosts(); //aqui adentro se usan los casilleros del hash
   cargarAmigos();
   cargarLikes();
 
@@ -24,13 +26,14 @@ int main(){
 
   int opcion = 0;
     
-  while(opcion != 4){
+  while(opcion != 5){
 
     printf("--------------------------------\n");
     printf("1. Informacion de usuario\n");
     printf("2. Busqueda por hashtag\n");
     printf("3. Buscar en red de contactos\n");
-    printf("4. Salir\n");
+    printf("4. Mostrar TopN hashtags\n");
+    printf("5. Salir\n");
     printf("--------------------------------\n");
     printf("Ingrese una opcion: ");
 
@@ -126,7 +129,7 @@ int main(){
       case 3:{
         long long int id_origen;
         int lim_grado;
-        printf("\n--- BUSQUEDA BFS POR GRADOS ---\n");
+        printf("\n---BUSQUEDA BFS POR GRADOS---\n");
         printf("Ingrese el ID del usuario inicial: ");
         scanf("%lld", &id_origen);
         printf("Ingrese el limite maximo de grados de conexion(ej:3): ");
@@ -139,12 +142,26 @@ int main(){
         }
         break;
       }
-    
       case 4:{
-        printf("entrando al case 4\n");
+        int cantidad_top;
+        printf("\n---CONSULTAR TopN HASHTAGS---\n");
+        printf("Ingrese la cantidad de hashtags a mostrar: ");
+        scanf("%d", &cantidad_top);
+
+        if(cantidad_top > 0){
+          mostrarTopN(mi_tabla_hash, cantidad_top);
+        } else{
+          printf("Error: Ingrese un numero mayor a 0.\n");
+        }
+        break;
+      }
+    
+      case 5:{
+        printf("entrando al case 5\n");
         liberarMemoriaPost();
         liberarMemoriaUsuario();
         liberarMemoriaVocabulario();
+        liberarMemoriatablaHash(mi_tabla_hash);
 
         printf("Cerrando el programa\n");
         opcion = 4;
