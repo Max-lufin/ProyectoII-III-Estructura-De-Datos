@@ -8,7 +8,7 @@
 extern Usuario* lista_usuarios;
 extern Post* lista_posts;
 extern Vocabulario* lista_vocabulario;
-
+extern tablaHash* mi_tabla_hash;
 //funciones de carga de usuarios
 
 void cargarUsuarios(){
@@ -67,7 +67,7 @@ void cargarPosts(){
       while(palabra_token != NULL){//si aun quedan palabras en esa oracion
         //verificamos que no sea una stopword(nuestra lista negra)
         if(!StopWord(palabra_token)){ //el "!" significa "NOT", por lo que si esa palabra NO es una stopword, insertala
-            insertarVocabulario(palabra_token, id_global_leido);
+            insertarHash(mi_tabla_hash, palabra_token, id_global_leido); //aqui lee la nueva funcion hash
         }
         palabra_token = strtok(NULL, " ");//se extrae la sgte palabra de ese string
       } 
@@ -85,28 +85,31 @@ void cargarAmigos(){
   }
   
   long long int id_usuario_leido, id_amigo_leido;
-  while(fscanf(archivo_amigos,"%lld;%lld\n",&id_usuario_leido,&id_amigo_leido) ==2){
-    //A->B
-    Usuario* usuario = buscarUsuario(id_usuario_leido); //se llama a la funcion buscarUsuario
-    if(usuario == NULL){
-      //printf("usuario no encontrado %lld\n",id_usuario_leido);
-      continue;
-    }
-    Amigo* nuevo_amigo = (Amigo*)malloc(sizeof(Amigo));
-    nuevo_amigo-> id_amigo = id_amigo_leido;
-    nuevo_amigo -> siguiente = usuario -> lista_amigos; // usuario accede a la lista de amigos
-    usuario -> lista_amigos = nuevo_amigo;
-    //B->A
-    Usuario* usuario_inverso = buscarUsuario(id_amigo_leido); //buscamos al amigo 'B' en la lista global de usuarios
- 
-    if(usuario_inverso != NULL){ //si el amigo existe, le agregamos el usuario original 'A'
-      Amigo* nuevo_amigo_inverso = (Amigo*)malloc(sizeof(Amigo));
-      nuevo_amigo_inverso->id_amigo = id_usuario_leido; //guardamos el id de 'A'
+  
+  while(fscanf(archivo_amigos,"%lld;%lld\n",&id_usuario_leido,&id_amigo_leido) == 2){
+    
+    //Buscamos exactamente una vez a cada usuario
+    Usuario* nodo_origen = buscarUsuario(id_usuario_leido);
+    Usuario* nodo_destino = buscarUsuario(id_amigo_leido);
+    
+    //el puente solo se hace si ambos existen
+    if(nodo_origen != NULL && nodo_destino != NULL){
+        
+        //A->B
+        Amigo* nuevo_amigo_origen = (Amigo*)malloc(sizeof(Amigo));
+        nuevo_amigo_origen->id_amigo = id_amigo_leido;
+        nuevo_amigo_origen->siguiente = nodo_origen->lista_amigos;
+        nodo_origen->lista_amigos = nuevo_amigo_origen;
 
-      nuevo_amigo_inverso->siguiente = usuario_inverso->lista_amigos; //lo insertamos al inicio de la lista de amigos de 'B'
-      usuario_inverso->lista_amigos = nuevo_amigo_inverso;
+        //B->A
+        Amigo* nuevo_amigo_destino = (Amigo*)malloc(sizeof(Amigo));
+        nuevo_amigo_destino->id_amigo = id_usuario_leido;
+        nuevo_amigo_destino->siguiente = nodo_destino->lista_amigos;
+        nodo_destino->lista_amigos = nuevo_amigo_destino;
     }
+    //si alguno de los dos es NULL, el 'if' se ignora y el bucle pasa a la siguiente línea del .txt
   }
+  
   fclose(archivo_amigos);
   printf("Exito: se cargaron los amigos\n");
 }
