@@ -60,11 +60,10 @@ void liberarMemoriaVocabulario(){
   }
   lista_vocabulario = NULL;
 }
-//liberar memoria de las colas
-void liberarMemoriaCola(Cola *c){
-  while(c ->primero != NULL){
-    NodoCola* nodo = desencolar(c);
-    free(nodo);
+void liberarMemoriatablaHash(tablaHash *tabla){
+  if(tabla-> tabla != NULL){
+    free(tabla ->tabla);
   }
-  c -> ultimo = NULL;
+  free(tabla);
+
 }
