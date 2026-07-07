@@ -78,7 +78,6 @@ Estructura auxiliar utilizada para controlar el orden de visita de los nodos en 
 ## Funcionalidades y Complejidades Temporales
 
 | Opción | Descripción |
-|---|---|---|
 | **1. Información de Usuario** | Busca un perfil y despliega sus amigos directos.
 | **2. Búsqueda por Hashtag** | Salta directo al casillero hash de la palabra.
 | **3. Red de Contactos (BFS)** | Explora el grafo por niveles (1°, 2° y 3° grado).
