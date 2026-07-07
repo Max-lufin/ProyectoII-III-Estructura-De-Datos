@@ -1,63 +1,123 @@
- # Proyecto-I-Estructura-De-Datos
+### Proyecto — Entregas II y III
+**Estructuras de Datos · Universidad de Valparaíso · Escuela de Ingeniería Informática**
 
-Este proyecto consiste en la implementación de un sistema de recuperacion eficiente de información, desarrollado en lenguaje C. El objetivo principal es el uso de Índices Invertidos y estructuras de datos dinámicas lineales para crear un motor de busqueda, evitando escaneos secuenciales exhaustivos en grandes volúmenes masivos de datos.
+---
 
-El sistema permite cargar usuarios, publicaciones (Post), lista de amistad y "likes" de las publiciones desde archivos de texto, procesarlos en memoria dinámica, filtrar palabras irrelevantes (stopwords) y realizar búsquedas rápidas.
+## Descripción
 
-# Estructura del Proyecto
+Este proyecto es la evolución de nuestro motor de búsqueda e inferencia de red social, desarrollado en lenguaje C. Para estas entregas, reemplazamos las búsquedas secuenciales exhaustivas por estructuras de alto rendimiento:
 
-El proyecto está organizado en las siguientes carpetas:
+- Un **Grafo No Dirigido** para modelar las conexiones entre usuarios
+- Una **Tabla Hash dinámica** para la recuperación de información en tiempo constante
 
-- `/src`: Contiene el código fuente principal (`main.c`).
-- `/include`: Contiene el archivo de cabecera (`estructuras.h`) donde se definen las estructuras de datos: listas enlazadas, vocabulario, usuarios y posts.
-- `/data`: Contiene los archivos de texto fuente (`usuarios.txt`, `posts.txt`, `amigos.txt`, `likes.txt`).
+---
 
-# Estructuras de Datos
+## Estructura del Proyecto
 
-Se implementaron las siguientes listas enlazadas dinámicas:
-
-- **Índice Invertido:** Diccionario o "vocabulario" de términos asociados a una lista de posteos, representados mediante IDs de post.
-- **Listas de Amigos:** Listas enlazadas asociadas a cada usuario para gestionar sus amigos.
-- **Likes:** Sublistas asociadas a cada publicación.
-
-# Instrucciones de Compilación
-
-Para compilar el proyecto, primero debe estar ubicado en la carpeta `/src` y utiliza el compilador `gcc` desde la terminal:
-
-```bash
-gcc main.c -o buscador
+```
+proyecto/
+├── src/
+│   ├── main.c
+│   ├── carga.c
+│   ├── buscador.c
+│   ├── hash.c
+│   ├── indice.c
+│   ├── cola.c
+│   └── liberarMemoria.c
+├── include/
+│   ├── estructuras.h
+│   ├── funciones.h
+│   └── cola.h
+└── data/
+    ├── usuarios.txt
+    ├── posts.txt
+    ├── amigos.txt
+    └── likes.txt
 ```
 
-Una vez compilado, puedes ejecutar el programa con:
+| Carpeta | Contenido |
+|---|---|
+| `/src` | Archivos fuente en C con la lógica del programa |
+| `/include` | Cabeceras con structs y prototipos de funciones |
+| `/data` | Archivos de texto normalizados que alimentan el programa |
+
+---
+
+## Instrucciones de Compilación y Ejecución
+
+Ubícate dentro de la carpeta `/src` y ejecuta:
+
+```bash
+gcc *.c -o buscador
+```
+
+Luego ejecuta el programa con:
 
 ```bash
 ./buscador
 ```
-# funcionalidades
 
-El sistema cuenta con un menú interactivo que permite las siguientes funciones:
+---
 
-- **Información de Usuario:** Permite consultar los datos de un usuario mediante su ID único y despliega la lista de sus amigos y nombre de usuario.
+## Arquitectura y Estructuras de Datos
 
-- **Búsqueda por Hashtag:** Utiliza el índice invertido para localizar publicaciones que contienen un hashtag específico. Esta función incluye:
+### Grafo No Dirigido
+Construido mediante un arreglo de vértices (`Usuario`) conectados por Listas de Adyacencia (`Amigo`). Se evita la duplicidad de aristas mediante la función `yaEsAmigo()` al momento de la carga.
 
-  - **Tokenización:** Separa las frases en términos individuales.
+### Tabla Hash — Índice Invertido
+Reemplaza la lista enlazada simple de la Entrega I. Utiliza el algoritmo de hashing **djb2** (optimizado con desplazamiento de bits) y resuelve las colisiones mediante **Encadenamiento Separado**.
 
-  - **Filtrado de Stopwords:** Omite conectores gramaticales que no aportan valor a la búsqueda, por ejemplo: `el`, `de`, `y`.
+### Cola FIFO
+Estructura auxiliar utilizada para controlar el orden de visita de los nodos en el algoritmo BFS. Las operaciones `encolar` y `desencolar` son ambas `O(1)`.
 
-  - **Visualización:** Despliega el ID del post, el texto original y la cantidad de likes.
+---
 
-- **Salir:** Finaliza el programa liberando correctamente toda la memoria dinámica utilizada.
+## Funcionalidades y Complejidades Temporales
 
-# Consideraciones Técnicas
+| Opción | Descripción | Complejidad |
+|---|---|---|
+| **1. Información de Usuario** | Busca un perfil y despliega sus amigos directos.
+| **2. Búsqueda por Hashtag** | Salta directo al casillero hash de la palabra.
+| **3. Red de Contactos (BFS)** | Explora el grafo por niveles (1°, 2° y 3° grado).
+| **4. Top-N Hashtags** | Extrae términos de la tabla y los ordena por frecuencia.
+| **5. Salir** | Libera toda la memoria de forma ordenada recorriendo listas y casilleros
 
-- **Gestión de Memoria:** El programa utiliza `malloc` para la creación dinámica de nodos y `free`, a través de funciones dedicadas como `liberarMemoriaUsuario`, para garantizar la correcta liberación de recursos al finalizar.
+---
 
-- **Robustez:** Se implementó el uso de `long long int` para el manejo de IDs, previniendo desbordamientos de memoria,tambien se implemento con la libreria `string.h`  la funcion strcpy para comparar cadena de caracteres.
+## Parámetros de la Tabla Hash
 
-# Información Académica
+| Parámetro | Descripción |
+|---|---|
+| **N** | Cantidad de términos únicos del vocabulario (calculado automáticamente con `descubrirN_Automatico()`) |
+| **M** | Primer número primo ≥ 1.5 × N (calculado por `iniciarTablaHash()`) |
+| **α (factor de carga)** | α = N / M ≤ 0.67 — garantizado por el dimensionamiento dinámico |
 
-- **Institución:** Universidad de Valparaíso.
+> El tamaño M **no está hardcodeado**. El programa realiza un pre-escaneo del dataset antes de iniciar la carga para calcular N y asignar el M correcto.
 
-- **Escuela:** Escuela de Ingeniería Informática.
+---
+
+## Consideraciones Técnicas
+
+### Sello Temporal BFS
+Para marcar los nodos visitados y evitar ciclos infinitos, no se resetean variables booleanas recorriendo toda la lista. Se usa un entero global `contador_busqueda_bfs` que sella cada nodo con el número de búsqueda actual, permitiendo reiniciar el estado del grafo entre consultas.
+
+### Gestión de Memoria Segura
+El programa no utiliza recolector de basura. Al seleccionar "Salir", se ejecutan funciones destructoras dedicadas que barren la memoria desde las estructuras más profundas hacia la superficie, en este orden:
+
+1. Likes (dentro de cada Post)
+2. NodoPosteo (dentro de cada Vocabulario)
+3. Posts (lista global)
+4. Amigos + Usuarios
+5. Tabla Hash (arreglo de punteros + nodos + posteos anidados)
+
+Esto evita estrictamente fugas de memoria (*Memory Leaks*).
+
+### Función Hash djb2
+```
+hash(0)   = 5381
+hash(i)   = hash(i-1) × 33 + c[i]
+```
+Implementada con desplazamiento de bits: `(hash << 5) + hash + c`, equivalente a `hash × 33 + c`.
+
+---
 
