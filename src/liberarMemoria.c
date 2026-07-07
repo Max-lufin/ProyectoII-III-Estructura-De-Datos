@@ -8,7 +8,6 @@
 extern Usuario* lista_usuarios;
 extern Post* lista_posts;
 extern Vocabulario* lista_vocabulario;
-extern Cola* c;
 
 void liberarMemoriaAmigos(Amigo *lista_amigo){
   while(lista_amigo != NULL){
@@ -61,9 +60,25 @@ void liberarMemoriaVocabulario(){
   lista_vocabulario = NULL;
 }
 void liberarMemoriatablaHash(tablaHash *tabla){
-  if(tabla-> tabla != NULL){
-    free(tabla ->tabla);
-  }
-  free(tabla);
+    if (tabla == NULL) return;
 
+    for (int i = 0; i < tabla->tamano; i++) {
+        Vocabulario *actual = tabla->tabla[i];
+        
+        while (actual != NULL) {
+            Vocabulario *nodo_a_borrar = actual;
+            actual = actual->siguiente;
+
+            //libera la sub-lista de posts que vive dentro de la palabra
+            NodoPosteo *post_actual = nodo_a_borrar->lista_posteo;
+            while (post_actual != NULL) {
+                NodoPosteo *post_borrar = post_actual;
+                post_actual = post_actual->siguiente;
+                free(post_borrar);
+            }
+            free(nodo_a_borrar); 
+        }
+    }
+    free(tabla->tabla); 
+    free(tabla);        
 }

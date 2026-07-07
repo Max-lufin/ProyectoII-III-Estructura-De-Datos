@@ -1,6 +1,11 @@
 #ifndef ESTRUCTURAS_H
 #define ESTRUCTURAS_H
 
+//nodo para los calculos
+typedef struct NodoTemp{
+    char palabra[1000];
+    struct NodoTemp* siguiente;
+} NodoTemp;
 
 //nodo para la cola de espera del BFS
 typedef struct NodoCola{
@@ -32,7 +37,7 @@ typedef struct NodoPosteo{
 } NodoPosteo;
 
 typedef struct Post{
-    int id_post_global;
+    long long int id_post_global;
     long long int id_usuario_post;
     char tags[1000];
     Like *lista_Like;
@@ -63,6 +68,10 @@ typedef struct NodoVocabulario{
 typedef struct tablaHash{ //tabla es un arreglo de punteros 
     int tamano;  //tamaño de la tabla hash
     Vocabulario** tabla; //doble puntero a Vocabulario, para poder crear el arreglo de punteros 
+    int total_terminos; //contador de terminos de la tabla
+    int largo_maximo_cadena; 
+    int cantidad_ocupadas;
+    int total_colisiones;
 }tablaHash;
 
 #endif

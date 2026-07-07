@@ -15,7 +15,9 @@ int main(){
   printf("------Iniciando Buscador--------\n");
   printf("--------------------------------\n");
 
-  mi_tabla_hash = iniciarTablaHash(119); //iniciamos la tabla hash con un N=119, lo que nos da un M=178
+  
+  int N_real = descubrirN_Automatico();
+  mi_tabla_hash = iniciarTablaHash(N_real); //iniciamos la tabla hash con un N que es la cantidad de palabras unicas 
 
   cargarUsuarios();
   cargarPosts(); //aqui adentro se usan los casilleros del hash
@@ -55,7 +57,7 @@ int main(){
         if(usr != NULL){
           printf("---SE ENCONTRO EL PERFIL---\n");
           printf("Nombre:   %s\n", usr->nombre_usuario);
-          printf("ID:       %d\n", usr->id_usuario);
+          printf("ID:       %lld\n", usr->id_usuario);
           printf("Amigos:   \n");
 
           Amigo* amigo_actual = usr->lista_amigos;
@@ -87,7 +89,8 @@ int main(){
           printf("Error: La palabra '%s' es una stopword y fue omitida del indice. Ingrese un termino valido\n", hashtag_buscar);
           break;
         }
-        Vocabulario* vocabulario_actual = lista_vocabulario;
+        unsigned long indice  = hash_djb2(hashtag_buscar, mi_tabla_hash->tamano); //calculamos el indice de nuestro casillero
+        Vocabulario* vocabulario_actual = mi_tabla_hash->tabla[indice]; //vamos al casillero exacto
         int encontrados = 0;
         //se busca la palabra en el diccionario
         while(vocabulario_actual != NULL){
@@ -153,21 +156,23 @@ int main(){
         } else{
           printf("Error: Ingrese un numero mayor a 0.\n");
         }
+        
+        printf("\n ---METRICAS DE LA TABLA HASH---\n");
+        Metricas(mi_tabla_hash);
         break;
       }
+
     
       case 5:{
         printf("entrando al case 5\n");
         liberarMemoriaPost();
         liberarMemoriaUsuario();
-        liberarMemoriaVocabulario();
+        liberarMemoriaVocabulario(); //con la entrega final esta funcion ya no es necesaria, pero la estructura vive en la tabla hash 
         liberarMemoriatablaHash(mi_tabla_hash);
-
         printf("Cerrando el programa\n");
-        opcion = 4;
+        opcion = 5;
         break;
       }
-
     } 
   }       
   return 0;

@@ -10,6 +10,7 @@ void cargarUsuarios();
 void cargarPosts();
 void cargarAmigos();
 void cargarLikes();
+int descubrirN_Automatico();
 
 
 //fuciones de busqueda
@@ -32,8 +33,12 @@ void liberarMemoriatablaHash(tablaHash *tabla);
 //stopword
 int StopWord(char* palabra);
 //tabla hash
+int esPrimo(int numero);
 void insertarHash(tablaHash* tabla, char* hastag, int id_post);
 void mostrarTopN(tablaHash* tabla, int top_n);
 unsigned long hash_djb2(char* palabra, int M);
 tablaHash* iniciarTablaHash(int N);
+void Metricas(tablaHash* tabla);
+int YaEsAmigo(Usuario* u, long long int id_destino);
+
 #endif

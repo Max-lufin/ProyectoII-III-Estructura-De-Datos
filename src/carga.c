@@ -76,6 +76,17 @@ void cargarPosts(){
   printf("Exito: se cargaron los post\n");
 }
 
+//verificamos si un usuario ya tiene a otro amigo en su lista, para eliminar las aristas duplicadas
+int YaEsAmigo(Usuario* u, long long int id_destino){
+  Amigo* a = u->lista_amigos;
+  while(a != NULL){
+    if(a->id_amigo == id_destino)
+    return 1;
+    a = a->siguiente;
+  }
+  return 0;
+}
+
 void cargarAmigos(){
   printf("entrando a amigos\n");
   FILE *archivo_amigos = fopen("../data/amigos.txt","r");
@@ -94,18 +105,22 @@ void cargarAmigos(){
     
     //el puente solo se hace si ambos existen
     if(nodo_origen != NULL && nodo_destino != NULL){
-        
-        //A->B
+      //A->B solo si no existe ya
+      if(!YaEsAmigo(nodo_origen, id_amigo_leido)){
         Amigo* nuevo_amigo_origen = (Amigo*)malloc(sizeof(Amigo));
         nuevo_amigo_origen->id_amigo = id_amigo_leido;
         nuevo_amigo_origen->siguiente = nodo_origen->lista_amigos;
         nodo_origen->lista_amigos = nuevo_amigo_origen;
+      }
+        
 
-        //B->A
+        //B->A solo si no existe ya
+      if(!YaEsAmigo(nodo_destino, id_usuario_leido)){
         Amigo* nuevo_amigo_destino = (Amigo*)malloc(sizeof(Amigo));
         nuevo_amigo_destino->id_amigo = id_usuario_leido;
         nuevo_amigo_destino->siguiente = nodo_destino->lista_amigos;
         nodo_destino->lista_amigos = nuevo_amigo_destino;
+      }
     }
     //si alguno de los dos es NULL, el 'if' se ignora y el bucle pasa a la siguiente línea del .txt
   }
@@ -160,4 +175,48 @@ int StopWord(char* palabra){
     }
   }
   return 0;
+}
+
+int descubrirN_Automatico(){
+  FILE *archivo = fopen("../data/posts.txt", "r");
+
+  //si el archivo no existe, devuelve 672
+  if(archivo == NULL){
+    printf("Error: No se pudo abrir el archivo posts.txt\n");
+    return 672;
+  }
+  NodoTemp* cabeza = NULL;
+  int contador_unicas = 0;
+  int id; long long user; char tags[1000];
+  
+  while(fscanf(archivo, "%d;%lld;%[^\n]\n", &id, &user, tags) ==3){
+    char* token = strtok(tags, " ");
+    while(token != NULL){
+      if(!StopWord(token)){
+        NodoTemp* aux = cabeza;
+        int existe = 0;
+        while(aux != NULL){
+          if(strcmp(aux->palabra, token) ==0)
+          {existe = 1; break;}
+          aux = aux->siguiente;
+        }
+        if(!existe){
+          contador_unicas++;
+          NodoTemp* nuevo = (NodoTemp*)malloc(sizeof(NodoTemp));
+          strcpy(nuevo->palabra, token);
+          nuevo->siguiente = cabeza;
+          cabeza = nuevo;
+        }
+      }
+      token = strtok(NULL, " ");
+    }
+  }
+  fclose(archivo);
+
+  while(cabeza != NULL){
+    NodoTemp* borrar = cabeza;
+    cabeza = cabeza->siguiente;
+    free(borrar);
+  }
+  return contador_unicas;
 }

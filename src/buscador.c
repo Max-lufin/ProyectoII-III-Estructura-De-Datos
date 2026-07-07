@@ -35,52 +35,68 @@ Post* buscarPostGlobal(int id_buscado){
     return NULL;
 }
 void buscarRedContactos(long long int id_inicio, int grado_maximo){
-    Usuario* origen = buscarUsuario(id_inicio); //para validar que el usuario exista
+    Usuario* origen = buscarUsuario(id_inicio);
     if(origen == NULL){
-        printf("Error: EL usuario %lld no existe en la red.\n", id_inicio);
+        printf("Error: El usuario %lld no existe en la red.\n", id_inicio);
         return;
     }
-    printf("--- Red De Contactos para el usuario %lld ---\n", id_inicio);
+    printf("\n--- Red de Contactos para el usuario %lld ---\n", id_inicio);
 
-    //iniciamos la estructura del bfs
+    // Arreglos para acumular resultados por grado
+    // 500 es el tope del dataset; ajusta si usas un dataset mayor
+    long long int grado1[500], grado2[500], grado3[500];
+    int cnt1 = 0, cnt2 = 0, cnt3 = 0;
+
     contador_busqueda_bfs++;
     Cola* fila = crearCola();
 
-    //nodo cero(origen)
     origen->id_ultima_busqueda = contador_busqueda_bfs;
     encolar(fila, id_inicio, 0);
 
-    int total_encontrados = 0;
-
-    //buscle bfs
     while(!colaVacia(fila)){
-        NodoCola* actual = desencolar(fila); //saca al primero de la fila
+        NodoCola* actual = desencolar(fila);
         long long int id_actual = actual->id_usuario;
         int grado_actual = actual->grado;
 
-        if(grado_actual > 0){ //mostramos la informacion
-            printf("<Grado %d> Usuario id: %lld\n", grado_actual, id_actual);
-            total_encontrados++;
-        }
-        if(grado_actual < grado_maximo){ //buscamos mas amigos mientras no hayamos llegado al grado maximo
+        // Acumular según grado
+        if(grado_actual == 1 && cnt1 < 500) grado1[cnt1++] = id_actual;
+        else if(grado_actual == 2 && cnt2 < 500) grado2[cnt2++] = id_actual;
+        else if(grado_actual == 3 && cnt3 < 500) grado3[cnt3++] = id_actual;
+
+        // Seguir expandiendo si no llegamos al grado máximo
+        if(grado_actual < grado_maximo){
             Usuario* nodo_usuario = buscarUsuario(id_actual);
-
             if(nodo_usuario != NULL){
-              Amigo* iterar_amigo = nodo_usuario->lista_amigos;
-
-              while(iterar_amigo != NULL){ //recorre todos sus amigos
-                Usuario* info_amigo = buscarUsuario(iterar_amigo->id_amigo); //busca el registro entero del amigo
-
-                if(info_amigo != NULL && info_amigo->id_ultima_busqueda != contador_busqueda_bfs){ //si el amigo existe y no fue visitado se marca para que no lo encolen 2 o mas veces
-                   info_amigo->id_ultima_busqueda = contador_busqueda_bfs;
-                   encolar(fila, iterar_amigo->id_amigo, grado_actual + 1);
+                Amigo* iterar_amigo = nodo_usuario->lista_amigos;
+                while(iterar_amigo != NULL){
+                    Usuario* info_amigo = buscarUsuario(iterar_amigo->id_amigo);
+                    if(info_amigo != NULL && info_amigo->id_ultima_busqueda != contador_busqueda_bfs){
+                        info_amigo->id_ultima_busqueda = contador_busqueda_bfs;
+                        encolar(fila, iterar_amigo->id_amigo, grado_actual + 1);
+                    }
+                    iterar_amigo = iterar_amigo->siguiente;
                 }
-                iterar_amigo = iterar_amigo->siguiente; //se va al final de la fila con un grado mayor
-              }
             }
         }
         free(actual);
     }
     free(fila);
-    printf("--- Total encontrados en la red de contactos: %d ---\n", total_encontrados);
+
+    // Imprimir resultados agrupados por grado
+    printf("\n--- Contactos de 1er Grado (%d encontrados) ---\n", cnt1);
+    for(int i = 0; i < cnt1; i++)
+        printf("  Usuario ID: %lld\n", grado1[i]);
+    if(cnt1 == 0) printf("  (ninguno)\n");
+
+    printf("\n--- Contactos de 2do Grado (%d encontrados) ---\n", cnt2);
+    for(int i = 0; i < cnt2; i++)
+        printf("  Usuario ID: %lld\n", grado2[i]);
+    if(cnt2 == 0) printf("  (ninguno)\n");
+
+    printf("\n--- Contactos de 3er Grado (%d encontrados) ---\n", cnt3);
+    for(int i = 0; i < cnt3; i++)
+        printf("  Usuario ID: %lld\n", grado3[i]);
+    if(cnt3 == 0) printf("  (ninguno)\n");
+
+    printf("\n--- Total encontrados: %d ---\n", cnt1 + cnt2 + cnt3);
 }
