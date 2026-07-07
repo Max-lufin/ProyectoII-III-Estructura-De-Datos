@@ -34,6 +34,8 @@ proyecto/
     ├── posts.txt
     ├── amigos.txt
     └── likes.txt
+    └── limpiador.py
+    └── dataset_recortadoPrincipal.csv
 ```
 
 | Carpeta | Contenido |
@@ -75,7 +77,7 @@ Estructura auxiliar utilizada para controlar el orden de visita de los nodos en 
 
 ## Funcionalidades y Complejidades Temporales
 
-| Opción | Descripción | Complejidad |
+| Opción | Descripción |
 |---|---|---|
 | **1. Información de Usuario** | Busca un perfil y despliega sus amigos directos.
 | **2. Búsqueda por Hashtag** | Salta directo al casillero hash de la palabra.
