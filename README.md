@@ -2,7 +2,8 @@
 **Estructuras de Datos · Universidad de Valparaíso · Escuela de Ingeniería Informática**
 
 ---
-
+## Dataset "Twitter Friends"
+- https://www.kaggle.com/datasets/hwassner/TwitterFriends
 ## Descripción
 
 Este proyecto es la evolución de nuestro motor de búsqueda e inferencia de red social, desarrollado en lenguaje C. Para estas entregas, reemplazamos las búsquedas secuenciales exhaustivas por estructuras de alto rendimiento:
